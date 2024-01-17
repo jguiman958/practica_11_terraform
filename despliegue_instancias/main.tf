@@ -3,9 +3,10 @@ provider "aws" {
   region = "us-east-1"
 }
 
+# CREACIÓN DE LOS GRUPOS DE SEGURIDAD.
 # Creamos un grupo de seguridad para el frontend
-resource "aws_security_group" "sg_frontend" {
-  name        = "sg_frontend"
+resource "aws_security_group" "sg_frontend_terraform" {
+  name        = "sg_frontend_terraform"
   description = "Grupo de seguridad para la instancia de frontend2"
 
   # Reglas de entrada para permitir el tráfico SSH, HTTP y HTTPS
@@ -33,7 +34,7 @@ resource "aws_security_group" "sg_frontend" {
 }
 
 # Creamos un grupo de seguridad para el servidor nfs.
-resource "aws_security_group" "sg_nfs" {
+resource "aws_security_group" "sg_nfs_terraform" {
   name        = "sg_nfs"
   description = "Grupo de seguridad para la instancia de nfs_server"
 
@@ -62,7 +63,7 @@ resource "aws_security_group" "sg_nfs" {
 }
 
 # Creamos un grupo de seguridad para el balanceador de carga.
-resource "aws_security_group" "sg_load_balancer" {
+resource "aws_security_group" "sg_load_balancer_terraform" {
   name        = "sg_load_balancer"
   description = "Grupo de seguridad para la instancia de load_balancer"
 
@@ -97,12 +98,59 @@ resource "aws_security_group" "sg_load_balancer" {
   }
 }
 
-# Creamos una instancia EC2 para el frontend 2.
+# Grupo de seguridad para el backend
+resource "aws_security_group" "sg_backend_terraform" {
+  name        = "sg_frontend"
+  description = "Grupo de seguridad para la instancia de frontend2"
+
+  # Reglas de entrada para permitir el tráfico SSH, HTTP y HTTPS
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+  ingress { # Regla para ping--> ICMP.
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Reglas de salida para permitir todas las conexiones salientes
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# CREACION DE LAS INSTANCIAS.
+# Creamos una instancia EC2 para el frontend 1 y frontend 2.
+resource "aws_instance" "frontend_1" {
+  ami           = "ami-0c7217cdde317cfec"
+  instance_type = "t2.small"
+  key_name      = "labsuser"
+  security_groups = [aws_security_group.sg_frontend_terraform]
+  tags = {
+    Name = "frontend_1"
+  }
+}
+
 resource "aws_instance" "frontend_2" {
   ami           = "ami-0c7217cdde317cfec"
   instance_type = "t2.small"
   key_name      = "labsuser"
-  security_groups = [aws_security_group.sg_frontend]
+  security_groups = [aws_security_group.sg_frontend_terraform]
   tags = {
     Name = "frontend_2"
   }
@@ -113,6 +161,7 @@ resource "aws_instance" "nfs_server" {
   ami           = "ami-0c7217cdde317cfec"
   instance_type = "t2.small"
   key_name      = "labsuser"
+  security_groups = [aws_security_group.sg_nfs_terraform]
   tags = {
     Name = "nfs_server"
   }
@@ -123,6 +172,18 @@ resource "aws_instance" "load_balancer" {
   ami           = "ami-0c7217cdde317cfec"
   instance_type = "t2.small"
   key_name      = "labsuser"
+  security_groups = [aws_security_group.sg_load_balancer_terraform]
+  tags = {
+    Name = "load_balancer"
+  }
+}
+
+# Creamos una instancia EC2 para el backend.
+resource "aws_instance" "backend" {
+  ami           = "ami-0c7217cdde317cfec"
+  instance_type = "t2.small"
+  key_name      = "labsuser"
+  security_groups = [aws_security_group.sg_backend_terraform]
   tags = {
     Name = "load_balancer"
   }
