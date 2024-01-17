@@ -185,6 +185,6 @@ resource "aws_instance" "backend" {
   key_name      = "labsuser"
   security_groups = [aws_security_group.sg_backend_terraform]
   tags = {
-    Name = "load_balancer"
+    Name = "backend"
   }
 }
