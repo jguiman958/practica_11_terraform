@@ -170,7 +170,7 @@ resource "aws_security_group" "sg_backend_terraform" {
 resource "aws_instance" "frontend_1_terraform" {
   ami           = "ami-0c7217cdde317cfec"
   instance_type = "t2.small"
-  key_name      = "labsuser"
+  key_name      = "vockey"
   security_groups = [aws_security_group.sg_frontend_terraform_1.name]
   tags = {
     Name = "frontend_1_terraform"
@@ -180,7 +180,7 @@ resource "aws_instance" "frontend_1_terraform" {
 resource "aws_instance" "frontend_2_terraform" {
   ami           = "ami-0c7217cdde317cfec"
   instance_type = "t2.small"
-  key_name      = "labsuser"
+  key_name      = "vockey"
   security_groups = [aws_security_group.sg_frontend_terraform_2.name]
   tags = {
     Name = "frontend_2_terraform"
@@ -191,7 +191,7 @@ resource "aws_instance" "frontend_2_terraform" {
 resource "aws_instance" "nfs_server" {
   ami           = "ami-0c7217cdde317cfec"
   instance_type = "t2.small"
-  key_name      = "labsuser"
+  key_name      = "vockey"
   security_groups = [aws_security_group.sg_nfs_terraform]
   tags = {
     Name = "nfs_server"
@@ -202,7 +202,7 @@ resource "aws_instance" "nfs_server" {
 resource "aws_instance" "load_balancer" {
   ami           = "ami-0c7217cdde317cfec"
   instance_type = "t2.small"
-  key_name      = "labsuser"
+  key_name      = "vockey"
   security_groups = [aws_security_group.sg_load_balancer_terraform]
   tags = {
     Name = "load_balancer"
@@ -213,7 +213,7 @@ resource "aws_instance" "load_balancer" {
 resource "aws_instance" "backend" {
   ami           = "ami-0c7217cdde317cfec"
   instance_type = "t2.small"
-  key_name      = "labsuser"
+  key_name      = "vockey"
   security_groups = [aws_security_group.sg_backend_terraform]
   tags = {
     Name = "backend"
