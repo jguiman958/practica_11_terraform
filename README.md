@@ -29,9 +29,9 @@ Debe realizarse según el orden que has ido leyéndolo, de arriba para abajo pue
 # Configuramos el proveedor de AWS
 provider "aws" {
   region     = "us-east-1"
-  access_key = "clave_acceso"
-  secret_key = "secret_token"
-  token      = "clave_token_aws"
+  access_key = "clave_acceso" <--ESTO CAMBIA SIEMPRE TENLO EN CUENTA
+  secret_key = "secret_token" <--ESTO CAMBIA SIEMPRE TENLO EN CUENTA
+  token      = "clave_token_aws" <--ESTO CAMBIA SIEMPRE TENLO EN CUENTA
 }
 ```
 Es necesario poner la región, la clave de acceso, la clave secreta y un token de autenticación.
@@ -287,3 +287,8 @@ resource "aws_instance" "backend" {
 Si queremos comprobar que funciona, solo tenemos que irnos al panel de las instancias creadas de aws y comprobar que se ha iniciado.
 
 ## Comprobaciones.
+En esta imagen vemos que me ha creado todas esas instancias a la vez, exluyendo la del nodo principal e instancia1 y instancia2.
+
+![instancias_terraform](https://github.com/jguiman958/practica_11_terraform/assets/145347496/fe019bd3-81e2-4f2c-97c6-b9e049117385)
+
+Y aquí lo tenemos, esto nos enseña a ver una forma cómoda de crear instancias, de forma muy sencilla.
