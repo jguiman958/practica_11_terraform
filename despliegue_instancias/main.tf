@@ -203,7 +203,7 @@ resource "aws_instance" "load_balancer" {
   ami           = "ami-0c7217cdde317cfec"
   instance_type = "t2.small"
   key_name      = "vockey"
-  security_groups = [aws_security_group.sg_load_balancer_terraform]
+  security_groups = [aws_security_group.sg_load_balancer_terraform.name]
   tags = {
     Name = "load_balancer"
   }
@@ -214,7 +214,7 @@ resource "aws_instance" "backend" {
   ami           = "ami-0c7217cdde317cfec"
   instance_type = "t2.small"
   key_name      = "vockey"
-  security_groups = [aws_security_group.sg_backend_terraform]
+  security_groups = [aws_security_group.sg_backend_terraform.name]
   tags = {
     Name = "backend"
   }
