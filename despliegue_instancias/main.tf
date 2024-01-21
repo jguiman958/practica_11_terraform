@@ -1,6 +1,8 @@
 # Configuramos el proveedor de AWS
 provider "aws" {
   region = "us-east-1"
+  acces_key = "clave_secreta_aws"
+  token = "clave_token"
 }
 
 # CREACIÓN DE LOS GRUPOS DE SEGURIDAD.
