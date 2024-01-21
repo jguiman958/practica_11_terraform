@@ -1,15 +1,16 @@
 # Configuramos el proveedor de AWS
 provider "aws" {
-  region = "us-east-1"
-  acces_key = "clave_secreta_aws"
-  token = "clave_token"
+  region     = "us-east-1"
+  access_key = "clave_acceso"
+  secret_key = "secret_token"
+  token      = "clave_token_aws"
 }
 
 # CREACIÓN DE LOS GRUPOS DE SEGURIDAD.
 # Creamos un grupo de seguridad para el frontend
 resource "aws_security_group" "sg_frontend_terraform_1" {
   name        = "sg_frontend_terraform_1"
-  description = "Grupo de seguridad para la instancia de frontend2"
+  description = "Grupo de seguridad para la instancia de frontend1"
 
   # Reglas de entrada para permitir el tráfico SSH, HTTP y HTTPS
   ingress {
@@ -34,7 +35,7 @@ resource "aws_security_group" "sg_frontend_terraform_1" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-# Grupo de seguridad para frontend 2.
+
 resource "aws_security_group" "sg_frontend_terraform_2" {
   name        = "sg_frontend_terraform_2"
   description = "Grupo de seguridad para la instancia de frontend2"
@@ -63,13 +64,12 @@ resource "aws_security_group" "sg_frontend_terraform_2" {
   }
 }
 
-
 # Creamos un grupo de seguridad para el servidor nfs.
 resource "aws_security_group" "sg_nfs_terraform" {
   name        = "sg_nfs"
   description = "Grupo de seguridad para la instancia de nfs_server"
 
-  # Reglas de entrada para permitir el tráfico SSH, HTTP y HTTPS
+  # Reglas de entrada para permitir el tráfico SSH, nfs.
   ingress {
     from_port   = 22
     to_port     = 22
@@ -95,7 +95,7 @@ resource "aws_security_group" "sg_nfs_terraform" {
 
 # Creamos un grupo de seguridad para el balanceador de carga.
 resource "aws_security_group" "sg_load_balancer_terraform" {
-  name        = "sg_load_balancer"
+  name        = "sg_load_balancer_terraform"
   description = "Grupo de seguridad para la instancia de load_balancer"
 
   # Reglas de entrada para permitir el tráfico SSH, HTTP y HTTPS
@@ -112,13 +112,13 @@ resource "aws_security_group" "sg_load_balancer_terraform" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-  } 
+  }
 
   # Reglas de salida para permitir todas las conexiones salientes
   egress {
@@ -131,10 +131,10 @@ resource "aws_security_group" "sg_load_balancer_terraform" {
 
 # Grupo de seguridad para el backend
 resource "aws_security_group" "sg_backend_terraform" {
-  name        = "sg_frontend"
-  description = "Grupo de seguridad para la instancia de frontend2"
+  name        = "sg_backend_terraform"
+  description = "Grupo de seguridad para la instancia de backend"
 
-  # Reglas de entrada para permitir el tráfico SSH, HTTP y HTTPS
+  # Reglas de entrada para permitir el tráfico SSH, 3306 e icmp.
   ingress {
     from_port   = 22
     to_port     = 22
@@ -148,7 +148,7 @@ resource "aws_security_group" "sg_backend_terraform" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   ingress { # Regla para ping--> ICMP.
     from_port   = -1
     to_port     = -1
@@ -168,9 +168,9 @@ resource "aws_security_group" "sg_backend_terraform" {
 # CREACION DE LAS INSTANCIAS.
 # Creamos una instancia EC2 para el frontend 1 y frontend 2.
 resource "aws_instance" "frontend_1_terraform" {
-  ami           = "ami-0c7217cdde317cfec"
-  instance_type = "t2.small"
-  key_name      = "vockey"
+  ami             = "ami-0c7217cdde317cfec"
+  instance_type   = "t2.small"
+  key_name        = "vockey"
   security_groups = [aws_security_group.sg_frontend_terraform_1.name]
   tags = {
     Name = "frontend_1_terraform"
@@ -178,9 +178,9 @@ resource "aws_instance" "frontend_1_terraform" {
 }
 
 resource "aws_instance" "frontend_2_terraform" {
-  ami           = "ami-0c7217cdde317cfec"
-  instance_type = "t2.small"
-  key_name      = "vockey"
+  ami             = "ami-0c7217cdde317cfec"
+  instance_type   = "t2.small"
+  key_name        = "vockey"
   security_groups = [aws_security_group.sg_frontend_terraform_2.name]
   tags = {
     Name = "frontend_2_terraform"
@@ -189,10 +189,10 @@ resource "aws_instance" "frontend_2_terraform" {
 
 # Creamos una instancia EC2 para el servidor nfs.
 resource "aws_instance" "nfs_server" {
-  ami           = "ami-0c7217cdde317cfec"
-  instance_type = "t2.small"
-  key_name      = "vockey"
-  security_groups = [aws_security_group.sg_nfs_terraform]
+  ami             = "ami-0c7217cdde317cfec"
+  instance_type   = "t2.small"
+  key_name        = "vockey"
+  security_groups = [aws_security_group.sg_nfs_terraform.name]
   tags = {
     Name = "nfs_server"
   }
@@ -200,9 +200,9 @@ resource "aws_instance" "nfs_server" {
 
 # Creamos una instancia EC2 para el balanceador de carga.
 resource "aws_instance" "load_balancer" {
-  ami           = "ami-0c7217cdde317cfec"
-  instance_type = "t2.small"
-  key_name      = "vockey"
+  ami             = "ami-0c7217cdde317cfec"
+  instance_type   = "t2.small"
+  key_name        = "vockey"
   security_groups = [aws_security_group.sg_load_balancer_terraform.name]
   tags = {
     Name = "load_balancer"
@@ -211,9 +211,9 @@ resource "aws_instance" "load_balancer" {
 
 # Creamos una instancia EC2 para el backend.
 resource "aws_instance" "backend" {
-  ami           = "ami-0c7217cdde317cfec"
-  instance_type = "t2.small"
-  key_name      = "vockey"
+  ami             = "ami-0c7217cdde317cfec"
+  instance_type   = "t2.small"
+  key_name        = "vockey"
   security_groups = [aws_security_group.sg_backend_terraform.name]
   tags = {
     Name = "backend"
