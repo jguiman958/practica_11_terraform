@@ -5,8 +5,8 @@ provider "aws" {
 
 # CREACIÓN DE LOS GRUPOS DE SEGURIDAD.
 # Creamos un grupo de seguridad para el frontend
-resource "aws_security_group" "sg_frontend_terraform" {
-  name        = "sg_frontend_terraform"
+resource "aws_security_group" "sg_frontend_terraform_1" {
+  name        = "sg_frontend_terraform_1"
   description = "Grupo de seguridad para la instancia de frontend2"
 
   # Reglas de entrada para permitir el tráfico SSH, HTTP y HTTPS
@@ -32,6 +32,35 @@ resource "aws_security_group" "sg_frontend_terraform" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+# Grupo de seguridad para frontend 2.
+resource "aws_security_group" "sg_frontend_terraform_2" {
+  name        = "sg_frontend_terraform_2"
+  description = "Grupo de seguridad para la instancia de frontend2"
+
+  # Reglas de entrada para permitir el tráfico SSH, HTTP y HTTPS
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Reglas de salida para permitir todas las conexiones salientes
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 
 # Creamos un grupo de seguridad para el servidor nfs.
 resource "aws_security_group" "sg_nfs_terraform" {
@@ -136,23 +165,23 @@ resource "aws_security_group" "sg_backend_terraform" {
 
 # CREACION DE LAS INSTANCIAS.
 # Creamos una instancia EC2 para el frontend 1 y frontend 2.
-resource "aws_instance" "frontend_1" {
+resource "aws_instance" "frontend_1_terraform" {
   ami           = "ami-0c7217cdde317cfec"
   instance_type = "t2.small"
   key_name      = "labsuser"
-  security_groups = [aws_security_group.sg_frontend_terraform]
+  security_groups = [aws_security_group.sg_frontend_terraform_1.name]
   tags = {
-    Name = "frontend_1"
+    Name = "frontend_1_terraform"
   }
 }
 
-resource "aws_instance" "frontend_2" {
+resource "aws_instance" "frontend_2_terraform" {
   ami           = "ami-0c7217cdde317cfec"
   instance_type = "t2.small"
   key_name      = "labsuser"
-  security_groups = [aws_security_group.sg_frontend_terraform]
+  security_groups = [aws_security_group.sg_frontend_terraform_2.name]
   tags = {
-    Name = "frontend_2"
+    Name = "frontend_2_terraform"
   }
 }
 
